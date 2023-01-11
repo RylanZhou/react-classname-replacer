@@ -2,7 +2,8 @@
   "name": "react-classname-replacer",
   "displayName": "react-classname-replacer",
   "description": "Replaces regular react string classname with css module classname",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "publisher": "rylanzhou",
   "engines": {
     "vscode": "^1.74.0"
   },

@@ -38,6 +38,6 @@ No extra settings are provided/required.
 
 ## Release Notes
 
-### 0.0.1
+### 0.1.0
 
 Initial version of the tool.
