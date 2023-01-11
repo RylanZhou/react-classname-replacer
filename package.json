@@ -2,6 +2,9 @@
   "name": "react-classname-replacer",
   "displayName": "react-classname-replacer",
   "description": "Replaces regular react string classname with css module classname",
+  "repository": {
+    "url": "https://github.com/RylanZhou/react-classname-replacer"
+  },
   "version": "0.1.0",
   "publisher": "rylanzhou",
   "engines": {

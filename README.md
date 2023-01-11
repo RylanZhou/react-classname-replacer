@@ -16,7 +16,7 @@ Now will be converted to:
 <div className={styles['my-class']}>
 ```
 
-![](recording.gif)
+![](images/recording.gif)
 
 ## How to Use
 
@@ -24,8 +24,8 @@ Put cursor around target className content.
 
 - Right click and select `Replace classname`, or
 - Use keyboard shortcut:
-  For mac: `Cmd K + R`
-  For win: `Ctrl K + R`
+  - For mac: <kbd>⌘</kbd><kbd>K</kbd> <kbd>R</kbd>
+  - For win: <kbd>Ctrl</kbd><kbd>K</kbd> <kbd>R</kbd>
 
 ## Extension Settings
 
