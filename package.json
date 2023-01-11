@@ -5,7 +5,7 @@
   "repository": {
     "url": "https://github.com/RylanZhou/react-classname-replacer"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "KumoYasuDev",
   "engines": {
     "vscode": "^1.74.0"
