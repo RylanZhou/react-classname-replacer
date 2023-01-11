@@ -14,21 +14,47 @@ export function activate(context: vscode.ExtensionContext) {
   // The commandId parameter must match the command field in package.json
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('react-classname-replacer.replace', replaceClassName),
+    vscode.commands.registerCommand('react-classname-replacer.replace', () => replaceClassName()),
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('react-classname-replacer.replace-with', () =>
+      replaceClassName(true),
+    ),
   );
 }
 
-function replaceClassName() {
+async function replaceClassName(hasCustomModuleName?: boolean) {
   const editor = vscode.window.activeTextEditor;
+  const config = vscode.workspace.getConfiguration();
 
   if (!editor) {
     return;
   }
 
-  editor.selections.forEach((selection) => doReplace(selection, editor));
+  // Wait for user input
+  if (hasCustomModuleName) {
+    const moduleName = await vscode.window.showInputBox({
+      placeHolder: config.get('react-classname-replacer.importModuleName'),
+      prompt: 'Set the import name of module for className',
+      value: config.get('react-classname-replacer.importModuleName'),
+    });
+
+    editor.selections.forEach((selection) =>
+      doReplace(selection, editor, vscode.workspace.getConfiguration(), moduleName),
+    );
+  } else {
+    editor.selections.forEach((selection) =>
+      doReplace(selection, editor, vscode.workspace.getConfiguration()),
+    );
+  }
 }
 
-function doReplace(selection: vscode.Selection, editor: vscode.TextEditor) {
+function doReplace(
+  selection: vscode.Selection,
+  editor: vscode.TextEditor,
+  config: vscode.WorkspaceConfiguration,
+  moduleName?: string,
+) {
   const { line, character } = selection.active;
 
   const { range, content } = getSelection(editor.document, line, character);
@@ -44,23 +70,36 @@ function doReplace(selection: vscode.Selection, editor: vscode.TextEditor) {
   }
 
   // Divide content by possible spaces, like "text-center button"
-  const classNames = content.split(' ').filter((className) => className);
+  const classList = content.split(' ').filter((className) => className);
+  const importName = moduleName || config.get<string>('react-classname-replacer.importModuleName');
 
   let result: string;
 
   // Has only 1 class => className={styles['text-center']}
-  if (classNames.length === 1) {
-    result = convert(classNames[0]);
+  if (classList.length === 1) {
+    result = convert(classList[0], importName);
   }
-  // Has more than 1 class => className={`${styles['text-center']} ${styles.button}`}
+  // Has more than 1 class
   else {
-    result =
-      '`' +
-      classNames
-        .map((className) => convert(className))
-        .map((each) => `$\{${each}\}`)
-        .join(' ') +
-      '`';
+    // If classnames is in use, => className={cls(styles['text-center'], styles.button)}
+    if (config.get<boolean>('react-classname-replacer.useClassnamesLib')) {
+      const classnamesImport = config.get<string>('react-classname-replacer.classnamesImportName');
+      result =
+        classnamesImport +
+        '(' +
+        classList.map((className) => convert(className, importName)).join(', ') +
+        ')';
+    }
+    // Else, => className={`${styles['text-center']} ${styles.button}`}
+    else {
+      result =
+        '`' +
+        classList
+          .map((className) => convert(className, importName))
+          .map((each) => `$\{${each}\}`)
+          .join(' ') +
+        '`';
+    }
   }
 
   editor.edit((eb) => eb.replace(range, `{${result}}`));
@@ -100,13 +139,13 @@ function getSelection(doc: vscode.TextDocument, line: number, column: number) {
   return { range: null, content: null };
 }
 
-function convert(content: string) {
+function convert(content: string, importName: string = 'styles') {
   // if className contains '-', e.g. 'mt-2', convert it to styles['mt-2']
   if (content.includes('-')) {
-    return `styles['${content}']`;
+    return `${importName}['${content}']`;
   }
   // else convert it to styles.mt
-  return `styles.${content}`;
+  return `${importName}.${content}`;
 }
 
 // This method is called when your extension is deactivated

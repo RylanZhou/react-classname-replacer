@@ -21,12 +21,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "react-classname-replacer.helloWorld",
-        "title": "Hello World"
+        "command": "react-classname-replacer.replace",
+        "title": "Replace className"
       },
       {
-        "command": "react-classname-replacer.replace",
-        "title": "Replace classname"
+        "command": "react-classname-replacer.replace-with",
+        "title": "Replace className with..."
       }
     ],
     "menus": {
@@ -34,6 +34,11 @@
         {
           "when": "editorFocus",
           "command": "react-classname-replacer.replace",
+          "group": "1_modification@1"
+        },
+        {
+          "when": "editorFocus",
+          "command": "react-classname-replacer.replace-with",
           "group": "1_modification@1"
         }
       ]
@@ -44,8 +49,34 @@
         "key": "Ctrl+k r",
         "mac": "Cmd+k r",
         "when": "editorFocus"
+      },
+      {
+        "command": "react-classname-replacer.replace-with",
+        "key": "Ctrl+k t",
+        "mac": "Cmd+k t",
+        "when": "editorFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Classname Replacer config",
+      "properties": {
+        "react-classname-replacer.importModuleName": {
+          "type": "string",
+          "default": "styles",
+          "description": "The default import name of module as written in: import xxx from 'styles.module.css'"
+        },
+        "react-classname-replacer.useClassnamesLib": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the 'classnames' library is in use - this will change the conversion when multiple classes are detected"
+        },
+        "react-classname-replacer.classnamesImportName": {
+          "type": "string",
+          "default": "cls",
+          "description": "The import name of classnames library - only takes effect when useClassnamesLib is set to true"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
